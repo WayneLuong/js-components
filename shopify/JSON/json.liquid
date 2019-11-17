@@ -1,0 +1,35 @@
+{% comment %} Create JSOn data using liquid {% endcomment %}
+{% layout none %}
+{% paginate blog.articles by 10 %}
+    {% capture results %}
+        {% for article in blog.articles %}
+            {
+                {% if main %}
+                  "title": {{ article.title | truncate: 100 | json }},
+                {% else %}
+                  "title": {{ article.title | truncate: 100 | json }},
+                {% endif %}
+
+                {% if main %}
+                    "excerpt": {{ article.content | strip_html | truncate: 140 | json }},
+                {% else %}
+                    "excerpt": {{ article.content | strip_html | truncate: 70 | json }},
+                {% endif %}
+
+                "url": {{ article.url | json }},
+                "month": {{ article.published_at | date: "%B" | json }},
+
+                "image": {{ article | img_url: '1024x1024' | json }},
+
+                "date": {{ article.published_at | date: '%d %b %y' | json }},
+
+                "date_sort": {{ article.published_at | date: '%Y%j%k' | replace: ' ', '0' }}
+
+            }
+            {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+    {% endcapture %}
+{% endpaginate %}
+{
+    "results": [{{ results }}]
+}
